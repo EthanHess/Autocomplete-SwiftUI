@@ -63,7 +63,7 @@ struct TextFieldContainer: View {
     
     private func setUpTrie() {
         let rootNode = Node(value: "")
-        var autocompleteTrie = Trie(root: rootNode)
+        let autocompleteTrie = Trie(root: rootNode)
         
         let words = ["hello", "dog", "hell", "cat", "a", "hel", "help", "helps", "helping"]
         for word in words {
@@ -73,6 +73,7 @@ struct TextFieldContainer: View {
         self.trie = autocompleteTrie
         
         print("RESULT TEST \(autocompleteTrie.suggest("hel"))")
+        print("CHILDREN \(autocompleteTrie.root.children)")
     }
     
     private func searchTrie(str: String) {
@@ -81,16 +82,14 @@ struct TextFieldContainer: View {
         //resultStrings = suggestions
         
         viewModel.results = suggestions
-        
     }
     
     //TODO Check if doesn't exist first
     private func addToTrie(str: String) {
-        guard var theTrie = self.trie else { return }
+        guard let theTrie = self.trie else { return }
         theTrie.insert(word: str)
         
         viewModel.trie = theTrie
-        
     }
 }
 
@@ -111,7 +110,7 @@ struct Node {
 }
 
 //Will conform to Equatable to observe changes
-struct Trie: Equatable {
+class Trie: Equatable {
     static func == (lhs: Trie, rhs: Trie) -> Bool {
         return lhs.allWords == rhs.allWords
     }
@@ -125,12 +124,13 @@ struct Trie: Equatable {
     }
     
     //MARK: Insert + Search
-    mutating func insert(word: String) {
+    func insert(word: String) {
         var current = self.root
         for char in strToCharArray(word) {
             let charString = charToString(char)
             if (current.children[charString] == nil) {
                 current.children[charString] = Node(value: charString)
+                print("CUR CHILDREN \(current.children)")
             }
             current = current.children[charString]!
         }

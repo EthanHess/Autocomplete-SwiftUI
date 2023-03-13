@@ -20,22 +20,16 @@ struct TrieContainer: View {
                 VStack {
                     if viewModel.trie != nil {
                         let root = viewModel.trie!.root
-                        NodeUI(char: root.value).frame(width: 40, height: 40, alignment: .center).cornerRadius(20)
+                        NodeUI(char: root.value).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: (geometry.size.width / 2) - 20, y: 100)
+                        
                         let allKeys = Array(root.children.keys)
                         let arr = getIdentifiableArrayFromKeys(allKeys)
-            
-//                        var offsetX = 0
-//                        var offsetY = 0
-                        
-                        ForEach(arr) { idDict in
-                            NodeUI(char: idDict.key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20)
-                            
-                            //Need to wrap this in function
-                              //  .offset(x: CGFloat(offsetX), y: CGFloat(offsetY))
-//                            offsetX += 60
-//                            offsetY += 60 //Just testing something
-                            
+  
+                        ForEach(0..<arr.count, id: \.self) { i in
+                            let offset = offsetForIndex(i)
+                            NodeUI(char: arr[i].key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: offset.x + 60, y: offset.y + 60) //just for test
                         }
+
                     }
                 }.onChange(of: viewModel.results) { newValue in
                     handleChangeResults(newValue)
@@ -56,6 +50,10 @@ struct TrieContainer: View {
     
     fileprivate func handleChangeTrie(_ newVal: Trie) {
         print("New Trie \(newVal)")
+    }
+    
+    fileprivate func offsetForIndex(_ i: Int) -> CGPoint {
+        return CGPoint(x: i * 60, y: i * 60)
     }
     
     //If tree grows this is not efficient, make sure original map is identifiable to not iterate twice
@@ -81,7 +79,6 @@ struct TrieContainer: View {
 
 //TODO move to own file
 struct NodeUI: View {
-    
     @State var char : String
     // @State var shouldHighlight: Bool = false // when traversing tree
     
