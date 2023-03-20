@@ -97,7 +97,8 @@ struct TextFieldContainer: View {
 
 typealias ChildMap = [String : Node] //Character -> Node
 
-struct Node {
+//Good example of class vs. struct (reference vs. value), will not work as struct
+class Node {
     var value : String
     var isEnd : Bool
     var children : ChildMap
@@ -109,7 +110,7 @@ struct Node {
     }
 }
 
-//Will conform to Equatable to observe changes
+//Conform to Equatable to observe changes
 class Trie: Equatable {
     static func == (lhs: Trie, rhs: Trie) -> Bool {
         return lhs.allWords == rhs.allWords
@@ -130,7 +131,7 @@ class Trie: Equatable {
             let charString = charToString(char)
             if (current.children[charString] == nil) {
                 current.children[charString] = Node(value: charString)
-                print("CUR CHILDREN \(current.children)")
+                //print("CUR CHILDREN \(current.children)")
             }
             current = current.children[charString]!
         }
