@@ -18,18 +18,45 @@ struct TrieContainer: View {
         VStack {
             GeometryReader { geometry in
                 VStack {
-                    if viewModel.trie != nil {
-                        let root = viewModel.trie!.root
-                        NodeUI(char: root.value).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: (geometry.size.width / 2) - 20, y: 100)
-                        
-                        let allKeys = Array(root.children.keys)
-                        let arr = getIdentifiableArrayFromKeys(allKeys)
-  
-                        ForEach(0..<arr.count, id: \.self) { i in
-                            let offset = offsetForIndex(i)
-                            NodeUI(char: arr[i].key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: offset.x + 60, y: offset.y + 60) //just for test
+                    ZStack {
+                        if viewModel.trie != nil {
+                            let root = viewModel.trie!.root
+                            let rootPointX = (geometry.size.width / 2) - 20
+                            NodeUI(char: root.value).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: rootPointX, y: 100).overlay(alignment: .center) {
+                                let startPointRoot = CGPoint(x: rootPointX, y: 100)
+                                let endPointRoot = CGPoint(x: offsetForIndex(1).x, y: offsetForIndex(1).y)
+                                
+                                Path { path in
+                                    path.move(to: startPointRoot)
+                                    path.addLine(to: endPointRoot)
+                                    path.closeSubpath()
+                                }.stroke(.white, lineWidth: 2)
+                            }
+                            
+                            
+                            let allKeys = Array(root.children.keys)
+                            let arr = getIdentifiableArrayFromKeys(allKeys)
+                            
+                            ForEach(0..<arr.count, id: \.self) { i in
+                                let offset = offsetForIndex(i)
+                                NodeUI(char: arr[i].key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: offset.x + 60, y: offset.x + 60).overlay(alignment: .center) {
+                                    //won't add path to last node
+                                    if i < (arr.count - 1) {
+                                        let offsetNext = offsetForIndex(i+1)
+                                        let startPointChild = CGPoint(x: offset.x + 60, y: offset.x + 60)
+                                        let endPointChild = CGPoint(x: offsetNext.x + 60, y: offsetNext.y + 60)
+                                        Path { path in
+                                            path.move(to: startPointChild)
+                                            path.addLine(to: endPointChild)
+                                            path.closeSubpath()
+                                        }.stroke(.white, lineWidth: 2)
+                                    } else {
+                                        Spacer()
+                                    }
+                                }
+                                
+                                                            }
                         }
-
                     }
                 }.onChange(of: viewModel.results) { newValue in
                     handleChangeResults(newValue)
@@ -84,7 +111,7 @@ struct NodeUI: View {
     
     var body: some View {
         ZStack {
-            Circle().background(Color.green)
+            Circle().foregroundColor(.green)
             Text(char).foregroundColor(.white).background(.clear)
         }.background(.clear)
     }
