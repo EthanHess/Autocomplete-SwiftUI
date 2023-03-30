@@ -9,9 +9,6 @@ import SwiftUI
 
 struct TrieContainer: View {
     
-    @State var trie : Trie?
-    @State var results : [String] = []
-    
     @EnvironmentObject var viewModel : ViewModel
     
     var body: some View {
@@ -79,6 +76,7 @@ struct TrieContainer: View {
         print("New Trie \(newVal)")
     }
     
+    //TODO account for nodes in trie and adjust accordingly
     fileprivate func offsetForIndex(_ i: Int) -> CGPoint {
         return CGPoint(x: i * 60, y: i * 60)
     }

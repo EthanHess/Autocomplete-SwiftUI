@@ -25,29 +25,41 @@ struct TextFieldContainer: View {
     
     var body: some View {
         VStack {
-            let placeholder = inputMode == .search ? "Search Trie" : "Add Word"
-            TextField(
-                placeholder,
-                text: $searchText
-            ).background(.white).textFieldStyle(RoundedBorderTextFieldStyle()).onSubmit {
-                inputMode == .search ? searchTrie(str: searchText) : addToTrie(str: searchText)
+            VStack {
+                let placeholder = inputMode == .search ? "Search Trie" : "Add Word"
+                TextField(
+                    placeholder,
+                    text: $searchText
+                ).background(.white).textFieldStyle(RoundedBorderTextFieldStyle()).onSubmit {
+                    inputMode == .search ? searchTrie(str: searchText) : addToTrie(str: searchText)
+                }.textInputAutocapitalization(.never)
+                
+                //TODO, make more obvious which is selected (Background or something)
+                HStack {
+                    Spacer()
+                    Button {
+                        inputMode = .search
+                    } label: {
+                        Text("Search").foregroundColor(.white)
+                    }
+                    Spacer()
+                    Button {
+                        inputMode = .add
+                    } label: {
+                        Text("Add").foregroundColor(.white)
+                    }
+                    Spacer()
+                }
             }
-            
-            //TODO, make more obvious which is selected (Background or something)
-            HStack {
-                Spacer()
-                Button {
-                    inputMode = .search
-                } label: {
-                    Text("Search").foregroundColor(.white)
-                }
-                Spacer()
-                Button {
-                    inputMode = .add
-                } label: {
-                    Text("Add").foregroundColor(.white)
-                }
-                Spacer()
+            ZStack {
+                LazyVStack {
+                    ForEach(0..<viewModel.results.count, id: \.self) { i in
+                        let result = viewModel.results[i]
+                        Spacer()
+                        Text(result).foregroundColor(.black).cornerRadius(5)
+                        Spacer()
+                    }
+                }.background(Color.white)
             }
         }
         .padding().onAppear( perform: {
@@ -82,6 +94,7 @@ struct TextFieldContainer: View {
         //resultStrings = suggestions
         
         viewModel.results = suggestions
+        print("Search Results \(suggestions)")
     }
     
     //TODO Check if doesn't exist first
