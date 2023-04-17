@@ -19,10 +19,10 @@ struct TrieContainer: View {
                         if viewModel.trie != nil {
                             let root = viewModel.trie!.root
                             let rootPointX = (geometry.size.width / 2) - 20
-                            NodeUI(char: root.value).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: rootPointX, y: 100).overlay(alignment: .center) {
-                                let startPointRoot = CGPoint(x: rootPointX, y: 100)
-                                let endPointRoot = CGPoint(x: offsetForIndex(1).x, y: offsetForIndex(1).y)
-                                
+                            let startPointRoot = CGPoint(x: rootPointX, y: 100)
+                            let endPointRoot = CGPoint(x: rootPointX, y: offsetYForIndex(1))
+                            
+                            NodeUI(char: root.value).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: rootPointX, y: offsetYForIndex(1)).overlay(alignment: .center) {
                                 Path { path in
                                     path.move(to: startPointRoot)
                                     path.addLine(to: endPointRoot)
@@ -30,18 +30,19 @@ struct TrieContainer: View {
                                 }.stroke(.white, lineWidth: 2)
                             }
                             
-                            
                             let allKeys = Array(root.children.keys)
+                            //Need to recur and get children of children etc. for each letter to build tree
+                            
                             let arr = getIdentifiableArrayFromKeys(allKeys)
                             
                             ForEach(0..<arr.count, id: \.self) { i in
-                                let offset = offsetForIndex(i)
-                                NodeUI(char: arr[i].key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: offset.x + 60, y: offset.x + 60).overlay(alignment: .center) {
+                                let offsetX = offsetXForIndex(i)
+                                let offsetY = offsetYForIndex(2)
+                                NodeUI(char: arr[i].key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: offsetX, y: offsetY).overlay(alignment: .center) {
                                     //won't add path to last node
                                     if i < (arr.count - 1) {
-                                        let offsetNext = offsetForIndex(i+1)
-                                        let startPointChild = CGPoint(x: offset.x + 60, y: offset.x + 60)
-                                        let endPointChild = CGPoint(x: offsetNext.x + 60, y: offsetNext.y + 60)
+                                        let startPointChild = CGPoint(x: rootPointX, y: 100)
+                                        let endPointChild = CGPoint(x: offsetX, y: offsetY)
                                         Path { path in
                                             path.move(to: startPointChild)
                                             path.addLine(to: endPointChild)
@@ -51,8 +52,7 @@ struct TrieContainer: View {
                                         Spacer()
                                     }
                                 }
-                                
-                                                            }
+                            }
                         }
                     }
                 }.onChange(of: viewModel.results) { newValue in
@@ -76,10 +76,23 @@ struct TrieContainer: View {
         print("New Trie \(newVal)")
     }
     
-    //TODO account for nodes in trie and adjust accordingly
-    fileprivate func offsetForIndex(_ i: Int) -> CGPoint {
-        return CGPoint(x: i * 60, y: i * 60)
+    //Will want to set x / y separately since one may be altered by index but not the other
+    fileprivate func offsetYForIndex(_ layer: Int) -> CGFloat {
+        return CGFloat(layer) * 60
     }
+    
+    fileprivate func offsetXForIndex(_ i: Int) -> CGFloat {
+        return CGFloat(i) * 60
+    }
+    
+    //MARK: TODO imp. get w / h of tree and size nodes accordingly (i.e. if bigger tree make nodes smaller and fit into view)
+//    fileprivate func getFullWidthOfTrie(_ trie: Trie) -> Int {
+//
+//    }
+//
+//    fileprivate func getFullHeightOfTrie(_ trie: Trie) -> Int {
+//
+//    }
     
     //If tree grows this is not efficient, make sure original map is identifiable to not iterate twice
 
