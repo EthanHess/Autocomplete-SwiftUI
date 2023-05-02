@@ -11,6 +11,10 @@ struct TrieContainer: View {
     
     @EnvironmentObject var viewModel : ViewModel
     
+    func offsetChildRow(_ i: Int, childWidth: CGFloat) -> CGFloat {
+        return childWidth * CGFloat(i)
+    }
+    
     var body: some View {
         VStack {
             GeometryReader { geometry in
@@ -38,6 +42,7 @@ struct TrieContainer: View {
                             //Need to recur and get children of children etc. for each letter to build tree
 
                             let arr = NodeHelper.getIdentifiableArrayFromKeys(root)
+                            let childWidth = geoSize.width / CGFloat(arr.count) //TODO factor in width of their children (length, if they have them etc.)
 
                             ForEach(0..<arr.count, id: \.self) { i in
                                 //Top row (root's children, can use recursive builder function for this too but just seeing how it looks / works this way)
@@ -61,11 +66,11 @@ struct TrieContainer: View {
                                 
                                 //MARK: Recur until end of trie (shows nodes but need to adjust coordinates)
                                 
-//                                if !nodeAtIndex.val.children.isEmpty {
-//                                    NodeRow(node: nodeAtIndex.val, x: offsetX, y: offsetY, depth: 3).frame(width: geoSize.width, height: 60).offset(x: 0)
-//                                } else {
-//                                    EmptyView()
-//                                }
+                                if !nodeAtIndex.val.children.isEmpty {
+                                    NodeRow(node: nodeAtIndex.val, x: NodeHelper.offsetXForIndex(i), y: offsetY, depth: 3).frame(width: childWidth, height: 60).offset(x: offsetChildRow(i, childWidth: childWidth))
+                                } else {
+                                    EmptyView()
+                                }
                             }
                         }
                     }
@@ -121,18 +126,27 @@ struct NodeRow: View {
     @State var y : CGFloat
     @State var depth : CGFloat
     
+    private func parentNodes(_ nodes: [IdentifiableDictionary]) -> [IdentifiableDictionary] {
+        var returnArray : [IdentifiableDictionary] = []
+        for nodeDict in nodes {
+            if !nodeDict.val.children.isEmpty { returnArray.append(nodeDict) }
+        }
+        return returnArray
+    }
+    
     var body: some View {
-        GeometryReader { geometry in
-            let geoSize = geometry.size
+       // GeometryReader { geometry in
+            //let geoSize = geometry.size
             HStack {
                 let arr = NodeHelper.getIdentifiableArrayFromKeys(node)
-                ForEach(0..<arr.count, id: \.self) { i in
-                    let nodeAtIndex = arr[i]
-                    let offsetX = NodeHelper.offsetXForIndex(i)
+                let parents = parentNodes(arr)
+                ForEach(0..<arr.count, id: \.self) { index in //Main children
+                    let nodeAtIndex = arr[index]
+                    let offsetX = NodeHelper.offsetXForIndex(Int(x)) //use parent for test
                     let offsetY = NodeHelper.offsetYForIndex(Int(depth))
-                    NodeUI(char: nodeAtIndex.key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: offsetX, y: offsetY).overlay(alignment: .center) {
+                    NodeUI(char: nodeAtIndex.key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: NodeHelper.offsetXForIndex(index), y: offsetY).overlay(alignment: .center) {
                         //won't add path to last node
-                        if i < (arr.count - 1) {
+                        if index < (arr.count - 1) {
                             let startPointChild = CGPoint(x: x, y: y)
                             let endPointChild = CGPoint(x: offsetX, y: offsetY)
                             Path { path in
@@ -144,15 +158,21 @@ struct NodeRow: View {
                             Spacer()
                         }
                     }
-                    
-                    if !nodeAtIndex.val.children.isEmpty {
-                        NodeRow(node: nodeAtIndex.val, x: offsetX, y: offsetY + 60, depth: depth + 1).frame(width: geoSize.width, height: 60).offset(x: 0)
-                    } else {
-                        EmptyView()
+                }
+                
+                //Recur each child
+                ForEach(0..<parents.count, id: \.self) { index in //Their children
+                    let parentAtIndex = arr[index]
+                    let childArray = NodeHelper.getIdentifiableArrayFromKeys(parentAtIndex.val)
+                    ForEach(0..<childArray.count, id: \.self) { childIndex in
+                        let childAtIndex = childArray[childIndex]
+             //           let offsetX = NodeHelper.offsetXForIndex(Int(x)) //Use parent X for test
+                        let offsetY = NodeHelper.offsetYForIndex(Int(depth + 1))
+                        NodeUI(char: childAtIndex.key).frame(width: 40, height: 40, alignment: .center).cornerRadius(20).offset(x: NodeHelper.offsetXForIndex(childIndex), y: offsetY)
                     }
                 }
             }
-        }
+       // }
     }
 }
 
@@ -172,6 +192,15 @@ struct NodeHelper {
     static func offsetXForIndex(_ i: Int) -> CGFloat {
         return CGFloat(i) * 60
     }
+    
+    //Slowly draw tree one node after another
+    //Add as extension to "View" or return some View to be able to use within "body" scope.
+    static func executeAfterDelay(_ timeInterval: Double, action: @escaping () -> Void) {
+        let dispatchTime = DispatchTime.now() + timeInterval
+        DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
+            action()
+        }
+    }
 
     //If tree grows this is not efficient, make sure original map is identifiable to not iterate twice
 
@@ -185,5 +214,16 @@ struct NodeHelper {
             returnArray.append(dict)
         }
         return returnArray
+    }
+}
+
+
+extension Color {
+    static var random: Color {
+        return Color(
+            red: .random(in: 0...1),
+            green: .random(in: 0...1),
+            blue: .random(in: 0...1)
+        )
     }
 }
