@@ -25,7 +25,8 @@ struct AlgorithmChoiceScroll: View {
                             ForEach(0..<upperBounds, id: \.self) { index in
                                 let text = algorithmTypeArray()[index]
                                 Spacer()
-                                Text(text).frame(width: width / 2, height: 100).padding().background(
+                                let textHeight = heightFromScrollOffset(scrollOffset.x, index: index, scrollWidth: width)
+                                Text(text).frame(width: width / 2, height: textHeight).padding().background(
                                 LinearGradient(
                                     colors: [.blue, .white],
                                     startPoint: .leading,
@@ -41,6 +42,29 @@ struct AlgorithmChoiceScroll: View {
         }.onChange(of: scrollOffset) { val in
             print("Scroll offset H \(val)")
         }
+    }
+    
+    private func heightFromScrollOffset(_ curOffsetX: CGFloat, index: Int, scrollWidth: CGFloat) -> CGFloat {
+        let rangeAtIndex = indexOffsetRangeMap(index, scrollWidth: scrollWidth)
+        //TODO smoothly shrink as "Text" element moves off screen
+        return rangeAtIndex.contains(curOffsetX) ? 100 : 50
+    }
+    
+    //Get the index's range where it'll be enlarged (showing on screen)
+    //Fixed arr length here but may want to create new map dynamically when we add to array or if user can add to array
+    private func indexOffsetRangeMap(_ index: Int, scrollWidth: CGFloat) -> Range<CGFloat> {
+        let table = [0: Range(uncheckedBounds: (lower: 0, upper: scrollWidth / 2)),
+                     1: Range(uncheckedBounds: (lower: scrollWidth / 2, upper: scrollWidth)),
+                     2: Range(uncheckedBounds: (lower: scrollWidth, upper: scrollWidth * 1.5)),
+                     3: Range(uncheckedBounds: (lower: scrollWidth * 1.5, upper: scrollWidth * 2)),
+                     4: Range(uncheckedBounds: (lower: scrollWidth * 2, upper: scrollWidth * 2.5)),
+                     5: Range(uncheckedBounds: (lower: scrollWidth * 3, upper: scrollWidth * 3.5))
+        ]
+        
+        guard let theRange = table[index] else {
+            return Range(uncheckedBounds: (lower: 0.0, upper: 1.0))
+        }
+        return theRange
     }
     
     //TODO add more
