@@ -31,11 +31,18 @@ struct AlgorithmChoiceScroll: View {
                                     colors: [.blue, .white],
                                     startPoint: .leading,
                                     endPoint: .trailing
-                                ).opacity(0.6)
-                            ).clipShape(Capsule())
-                                Spacer()
+                                ).opacity(0.6).cornerRadius(10).animation(.easeInOut, value: textHeight)
+                            )
+//                                .clipShape(Capsule())
+//                                Spacer()
                             }
-                        }
+                        }.background(
+                            LinearGradient(
+                                colors: [.blue, .white],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
                     }
                 }
             }
