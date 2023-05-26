@@ -12,6 +12,7 @@ struct AlgorithmChoiceScroll: View {
     
     @State private var scrollPosition : CGFloat = 0
     @State private var scrollOffset = CGPoint()
+    @State private var selectedIndex = 0
     
     var body: some View {
         HStack {
@@ -31,8 +32,14 @@ struct AlgorithmChoiceScroll: View {
                                     colors: [.blue, .white],
                                     startPoint: .leading,
                                     endPoint: .trailing
+                                    //TODO update duration
                                 ).opacity(0.6).cornerRadius(10).animation(.easeInOut, value: textHeight)
-                            )
+                                    
+                            ).onTapGesture { //Text
+                                selectedIndex = index
+                                //TODO pass to VM and display correct algorithm diagram
+                                print("selected index \(selectedIndex)")
+                            }
 //                                .clipShape(Capsule())
 //                                Spacer()
                             }
@@ -54,7 +61,18 @@ struct AlgorithmChoiceScroll: View {
     private func heightFromScrollOffset(_ curOffsetX: CGFloat, index: Int, scrollWidth: CGFloat) -> CGFloat {
         let rangeAtIndex = indexOffsetRangeMap(index, scrollWidth: scrollWidth)
         //TODO smoothly shrink as "Text" element moves off screen
-        return rangeAtIndex.contains(curOffsetX) ? 100 : 50
+        
+        let finalHeight = rangeAtIndex.contains(curOffsetX) ? heightForSubrangeAtX(curOffsetX, curRange: rangeAtIndex) : 50
+        return finalHeight
+    }
+    
+    //Just a test, needs tweaks
+    private func heightForSubrangeAtX(_ curOffsetX: CGFloat, curRange: Range<CGFloat>) -> CGFloat {
+        let upperBounds = curRange.upperBound //The end of the scroll (in range)
+        let operand = upperBounds - curOffsetX
+        let height = (operand / 5) + 50
+        print("height sr \(height)")
+        return height
     }
     
     //Get the index's range where it'll be enlarged (showing on screen)
