@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2714546A29B7C04800DA221E /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2714546929B7C04800DA221E /* ViewModel.swift */; };
+		2772FCBB2A26931600359739 /* MatrixContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2772FCBA2A26931600359739 /* MatrixContainer.swift */; };
 		27B91A432A12E5AB0073A327 /* AlgorithmChoiceScroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B91A422A12E5AB0073A327 /* AlgorithmChoiceScroll.swift */; };
 		27B91A452A12E5BA0073A327 /* BigOChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B91A442A12E5BA0073A327 /* BigOChart.swift */; };
 		27CF001529B676ED00C40B5E /* AutocompleteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CF001429B676ED00C40B5E /* AutocompleteApp.swift */; };
@@ -40,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		2714546929B7C04800DA221E /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		2772FCBA2A26931600359739 /* MatrixContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixContainer.swift; sourceTree = "<group>"; };
 		27B91A422A12E5AB0073A327 /* AlgorithmChoiceScroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmChoiceScroll.swift; sourceTree = "<group>"; };
 		27B91A442A12E5BA0073A327 /* BigOChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigOChart.swift; sourceTree = "<group>"; };
 		27CF001129B676EC00C40B5E /* Autocomplete.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Autocomplete.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -108,6 +110,7 @@
 				27CF001629B676ED00C40B5E /* ContentView.swift */,
 				27CF003E29B6811A00C40B5E /* TextFieldContainer.swift */,
 				27CF004029B69E1500C40B5E /* TrieContainer.swift */,
+				2772FCBA2A26931600359739 /* MatrixContainer.swift */,
 				2714546929B7C04800DA221E /* ViewModel.swift */,
 				27B91A422A12E5AB0073A327 /* AlgorithmChoiceScroll.swift */,
 				27B91A442A12E5BA0073A327 /* BigOChart.swift */,
@@ -272,6 +275,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2772FCBB2A26931600359739 /* MatrixContainer.swift in Sources */,
 				2714546A29B7C04800DA221E /* ViewModel.swift in Sources */,
 				27CF001729B676ED00C40B5E /* ContentView.swift in Sources */,
 				27CF004129B69E1500C40B5E /* TrieContainer.swift in Sources */,

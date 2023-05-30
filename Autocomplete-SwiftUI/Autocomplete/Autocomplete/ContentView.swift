@@ -18,12 +18,22 @@ struct ContentView: View {
 //            GeometryReader { geo in
 //            let width = geo.size.width
 //            let height = geo.size.height
-            TextFieldContainer().environmentObject(viewModel).background(Color.blue).shadow(color: .cyan, radius: 5)
-            TrieContainer().environmentObject(viewModel).background(Color.teal).shadow(color: .cyan, radius: 5)
+            
+            //MARK: TODO map indices to correct struct + switch statement, but for now we'll just test these
+            if viewModel.selectedIndex == 0 {
+                TextFieldContainer().environmentObject(viewModel).background(Color.blue).shadow(color: .cyan, radius: 5)
+                TrieContainer().environmentObject(viewModel).background(Color.teal).shadow(color: .cyan, radius: 5)
+            } else if viewModel.selectedIndex == 1 {
+                MatrixContainer().environmentObject(viewModel).background(Color.green)
+            }
+            
+            //Always at the bottom to navigate between
             AlgorithmChoiceScroll().environmentObject(viewModel).background(Color.white).shadow(color: .cyan, radius: 5)
                     //.frame(width: width * 0.8, height: 100)
   //          }
-        }
+        }.onChange(of: viewModel.selectedIndex, perform: { newValue in
+            print("VM index \(newValue)")
+        })
         .padding()
     }
 }

@@ -14,11 +14,13 @@ struct AlgorithmChoiceScroll: View {
     @State private var scrollOffset = CGPoint()
     @State private var selectedIndex = 0
     
+    @EnvironmentObject var viewModel : ViewModel
+    
     var body: some View {
         HStack {
             GeometryReader { geo in
                 let width = geo.size.width
-                let height = geo.size.height
+                //let height = geo.size.height
                 OffsetObservingScrollView(offset: $scrollOffset) {
                     HStack {
                         LazyHStack {
@@ -27,9 +29,10 @@ struct AlgorithmChoiceScroll: View {
                                 let text = algorithmTypeArray()[index]
                                 Spacer()
                                 let textHeight = heightFromScrollOffset(scrollOffset.x, index: index, scrollWidth: width)
+                                let colors = retrunColorsFromIndex(index)
                                 Text(text).frame(width: width / 2, height: textHeight).padding().background(
                                 LinearGradient(
-                                    colors: [.blue, .white],
+                                    colors: colors,
                                     startPoint: .leading,
                                     endPoint: .trailing
                                     //TODO update duration
@@ -38,6 +41,7 @@ struct AlgorithmChoiceScroll: View {
                             ).onTapGesture { //Text
                                 selectedIndex = index
                                 //TODO pass to VM and display correct algorithm diagram
+                                viewModel.selectedIndex = selectedIndex
                                 print("selected index \(selectedIndex)")
                             }
 //                                .clipShape(Capsule())
@@ -56,6 +60,10 @@ struct AlgorithmChoiceScroll: View {
         }.onChange(of: scrollOffset) { val in
             print("Scroll offset H \(val)")
         }
+    }
+    
+    private func retrunColorsFromIndex(_ index: Int) -> [Color] {
+        return index == selectedIndex ? [.green, .white] : [.blue, .white]
     }
     
     private func heightFromScrollOffset(_ curOffsetX: CGFloat, index: Int, scrollWidth: CGFloat) -> CGFloat {

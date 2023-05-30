@@ -12,4 +12,5 @@ import Combine
 class ViewModel: ObservableObject {
     @Published var results : [String] = []
     @Published var trie : Trie?
+    @Published var selectedIndex : Int = 0 //For algorithn choice scroll
 }
